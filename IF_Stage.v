@@ -8,10 +8,10 @@ module IF_stage (
   wire [31:0] PC_reg_out;
   wire [31:0] PC_reg_in;
 
-  assign PC_reg_in = inc_PC; //todo: add mux
+  assign PC_reg_in = branch_taken ? branch_address : inc_PC;
   assign inc_PC = PC_reg_out + 32'd4;
   IM im(clk, PC_reg_out, instruction);
-  PC_Reg PC_reg(clk, rst, 1'b0, PC_reg_in, PC_reg_out);
+  PC_Reg PC_reg(clk, rst, freeze, PC_reg_in, PC_reg_out);
   
 
 endmodule
