@@ -13,16 +13,21 @@ module ID_Stage (
   output [3:0] dest, src1, src2
 );
 
+  wire cu_S, cu_B, cu_mem_write_en, cu_mem_read_en, cu_wb_en, cu_is_immediate, c_check_out, control_sig_selector;
+  wire [3:0] cu_exe_command;
+
+  assign two_src = (~instruction[25]) || mem_write_en;
+
   assign src1 = instruction[19:16];
   assign src2 = (mem_write_en) ? instruction[15:12] : instruction[3:0];
   RF register_file(clk, rst, src1, src2, wb_dest, wb_result, wb_wb_enable, val_rn, val_rm);
   
-  wire cu_S, cu_B, cu_mem_write_en, cu_mem_read_en, cu_wb_en, cu_is_immediate, c_check_out, control_sig_selector;
-  wire [3:0] cu_exe_command;
+  Condition_Check condition_check(instruction[31:28], status_reg_out, c_check_out);
+  
   assign control_sig_selector = hazard || (~c_check_out);
   assign {exe_command, wb_en, mem_read_en, mem_write_en, S, B, is_immediate} = 
     control_sig_selector ? 9'b0 : {cu_exe_command, cu_wb_en, cu_mem_read_en, cu_mem_write_en, cu_S, cu_B, cu_is_immediate};
-  assign two_src = (~instruction[25]) || mem_write_en;
+  
   Control_Unit control_unit(
     instruction[27:26], 
     instruction[24:21], 
@@ -36,8 +41,6 @@ module ID_Stage (
     cu_B,
     cu_S
   );
-
-  Condition_Check condition_check(instruction[31:28], status_reg_out, c_check_out);
   
   assign imm_8 = instruction[7:0];
   assign rotate_imm = instruction[11:8];
