@@ -40,8 +40,8 @@ module arm (
   assign branch_taken = id_reg_B;
   assign flush = branch_taken;
   
-  IF_stage IF(clk, rst, freeze, branch_taken, exe_branch_address, if_pc_out, if_instruction_out);
-  IF_stage_reg IF_reg(clk, rst, freeze, flush , if_pc_out, if_instruction_out, if_reg_pc_out, if_reg_instruction_out);
+  IF_Stage IF(clk, rst, freeze, branch_taken, exe_branch_address, if_pc_out, if_instruction_out);
+  IF_Stage_Reg IF_reg(clk, rst, freeze, flush, if_pc_out, if_instruction_out, if_reg_pc_out, if_reg_instruction_out);
   
   
   ID_Stage ID(

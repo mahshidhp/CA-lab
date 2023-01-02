@@ -1,4 +1,4 @@
-module IF_stage (
+module IF_Stage (
     input clk, rst, freeze, branch_taken,
     input [31:0] branch_address,
     output [31:0] inc_PC, instruction

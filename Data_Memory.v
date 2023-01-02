@@ -1,4 +1,4 @@
-module Data_memory (
+module Data_Memory (
     input clk, mem_read, mem_write,
     input [31:0] val_rm, alu_res,
     output [31:0] value 

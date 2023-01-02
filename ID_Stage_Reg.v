@@ -24,6 +24,23 @@ module ID_Stage_Reg (
 );
     
   always @(posedge clk, posedge rst) begin
+      
+    if (~flush && ~rst) begin
+      PC <= PC_in;
+      {exe_WB_EN, exe_MEM_R_EN, exe_MEM_W_EN} <= {id_WB_EN, id_MEM_R_EN, id_MEM_W_EN};
+      exe_EXE_CMD <= id_EXE_CMD;
+      {exe_B, exe_S} <= {id_B, id_S};
+      {exe_Val_Rn, exe_Val_Rm} <= {id_Val_Rn, id_Val_Rm};
+      exe_immed_8 <= id_immed_8;
+      exe_rotate_imm <= id_rotate_imm;
+      exe_Signed_imm_24 <= id_Signed_imm_24;
+      exe_Dest <= id_Dest;
+      exe_status_reg <= id_status_reg;
+      immediate <=  is_immediate;
+      scr1_out = scr1;
+      scr2_out = scr2;
+    end 
+    else begin
       exe_WB_EN = 1'b0;
       exe_MEM_R_EN = 1'b0;
       exe_MEM_W_EN = 1'b0;
@@ -41,21 +58,7 @@ module ID_Stage_Reg (
       immediate = 1'b0;
       scr1_out = 4'bx;
       scr2_out = 4'bx;
-      if (~flush && ~rst) begin
-          PC <= PC_in;
-          {exe_WB_EN, exe_MEM_R_EN, exe_MEM_W_EN} <= {id_WB_EN, id_MEM_R_EN, id_MEM_W_EN};
-          exe_EXE_CMD <= id_EXE_CMD;
-          {exe_B, exe_S} <= {id_B, id_S};
-          {exe_Val_Rn, exe_Val_Rm} <= {id_Val_Rn, id_Val_Rm};
-          exe_immed_8 <= id_immed_8;
-          exe_rotate_imm <= id_rotate_imm;
-          exe_Signed_imm_24 <= id_Signed_imm_24;
-          exe_Dest <= id_Dest;
-          exe_status_reg <= id_status_reg;
-          immediate <=  is_immediate;
-          scr1_out = scr1;
-          scr2_out = scr2;
-      end
+    end
   end
 
 endmodule
