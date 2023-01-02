@@ -1,10 +1,10 @@
 `timescale 1ns/1ns
 
 module testbench();
-    reg clk=0, rst=0;
-    arm m(clk,rst);
+    reg clk=0, rst=0, forward=1;
+    arm UUT(clk, rst, forward);
 
-    initial repeat (5000) #10 clk=~clk;
+    initial repeat (500) #10 clk=~clk;
     
     initial begin
       #2 

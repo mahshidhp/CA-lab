@@ -1,5 +1,5 @@
-module arm(
-  input clk, rst
+module arm (
+  input clk, rst, forward
 );
   
   wire freeze, branch_taken, flush, hazard;
@@ -32,7 +32,9 @@ module arm(
   wire [3:0] wb_dest;
   wire wb_wb_en;
   
-  assign hazard = 1'b0;
+  wire [1:0] sel_src1, sel_src2;
+  wire [31:0] mux1_val, mux2_val;
+  
   assign freeze = hazard;
   
   assign branch_taken = id_reg_B;
@@ -59,6 +61,9 @@ module arm(
     id_reg_Val_Rn, id_reg_Val_Rm, id_reg_immed_8, id_reg_rotate_imm, id_reg_Signed_imm_24, id_reg_Dest, id_reg_status_reg, 
     id_reg_src1, id_reg_src2
   );
+  
+  assign mux1_val = (sel_src1==2'b00)?id_reg_Val_Rn:(sel_src1==2'b01)?exe_reg_alu_res:(sel_src1==2'b10)?wb_result:32'dx;
+  assign mux2_val = (sel_src2==2'b00)?id_reg_Val_Rm:(sel_src2==2'b01)?exe_reg_alu_res:(sel_src2==2'b10)?wb_result:32'dx;
       
   EXE_Stage EXE(
     //inputs
@@ -93,5 +98,18 @@ module arm(
     wb_wb_en, wb_dest, wb_result
   );
 	
+	Hazard_Detection HD(
+    exe_wb_en, exe_reg_wb_out, id_two_src,
+    if_reg_instruction_out[19:16], id_src2, exe_dest, exe_reg_dest_out,
+    id_reg_MEM_R_EN, forward,
+    hazard
+  );
+  
+  Forwarding_Unit FU(
+    wb_wb_en, exe_reg_wb_out, forward,
+    id_reg_src1, id_reg_src2, wb_dest, exe_reg_dest_out,
+    sel_src1, sel_src2
+  );
+  
 endmodule
 
